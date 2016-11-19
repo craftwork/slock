@@ -1,0 +1,74 @@
+// option 1: semaphore with FIFO queue
+// pros: guaranteed order of execution
+// cons: lots of failure scenarios
+
+// create lock if it doesn't exist
+add lock 1
+                                            // failure: no worries
+// semaphore wait()
+decr lock 1
+                                            // failure: session will never be unlocked
+if lock < 0
+	append queue hash
+                                            // failure: queue will eventually have an item that won't be removed
+while lock < 0 and queue[0] != hash
+	sleep
+                                            // failure: first item in queue will never be removed
+// remove from the queue
+queue[0] = null
+                                            // failure: session will never be unlocked
+// we have a lock
+session->write()
+                                            // failure: session will never be unlocked
+// semaphore signal()
+incr lock 1
+                                            // failure: no worries
+
+
+
+// option 2: FIFO queue
+// pros: guaranteed order of execution
+//       slightly less failure scenarios
+// cons: still quite a few failure scenarios
+
+// add lock to queue
+add queue lock
+                                            // failure: session will never be unlocked
+if queue existed
+	append queue lock
+                                            // failure: session will never be unlocked
+// wait until we're first in queue
+while queue[0] != lock
+	sleep
+                                            // failure: session will never be unlocked
+// we have the lock
+session->write()
+                                            // failure: session will never be unlocked
+// remove from queue
+do
+	gets queue
+                                            // failure: session will never be unlocked
+	queue[0] = null
+while cas queue == failure
+                                            // failure on fail: session will never be unlocked, failure on success: no worries
+
+
+
+
+// option 3: simple semaphore
+// pros: limited failure scenarios
+// cons: no guaranteed order of execution
+
+// create lock if it doesn't exist
+add lock 1
+                                            // failure: no worries
+// semaphore wait()
+while gets lock < 1 ||                      // failure: no worries
+	cas lock-1 == failed                    // failure on fail: no worries, failure on success: session will never be unlocked
+	sleep
+
+session->write()
+                                            // failure: session will never be unlocked
+// semaphore signal()
+incr lock 1
+                                            // failure: no worries
