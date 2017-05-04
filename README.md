@@ -18,8 +18,8 @@ which can have performance implications as well as undesired failure scenarios b
 
 ## Should I use this?
 
-Here are two scenarios where session locking is useful, and hopefully you can interpret your own situation through
-these scenarios to see if this library is useful for you:
+Here are two scenarios, each describing what would happen with and without session locking, and hopefully you can
+interpret your own situation through these scenarios to see if this library is useful for you:
 
 ### Scenario 1
 
