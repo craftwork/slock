@@ -1,9 +1,9 @@
 <?php
 namespace Slock;
 
-use Slock\Strategy\StrategyInterface;
+use Slock\Lock\LockInterface;
 
-class Slock implements \SessionHandlerInterface
+final class Slock implements \SessionHandlerInterface
 {
     /**
      * @var \SessionHandlerInterface
@@ -11,11 +11,11 @@ class Slock implements \SessionHandlerInterface
     private $handler;
 
     /**
-     * @var StrategyInterface
+     * @var LockInterface
      */
     private $lock;
 
-    public function __construct(\SessionHandlerInterface $handler, StrategyInterface $lock)
+    public function __construct(\SessionHandlerInterface $handler, LockInterface $lock)
     {
         $this->handler = $handler;
         $this->lock = $lock;

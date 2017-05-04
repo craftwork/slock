@@ -1,15 +1,15 @@
 <?php
-namespace Slock\Strategy\Memcached;
+namespace Slock\Lock\Memcached;
 
 use Slock\SlockException;
-use Slock\Strategy\StrategyInterface;
+use Slock\Lock\LockInterface;
 
 /**
  * Uses memcache as a store for creating a FIFO queue for the user's session.
  *
- * @package Slock\Strategy\Memcached
+ * @package Slock\Lock\Memcached
  */
-final class FifoQueue implements StrategyInterface
+final class FifoQueue implements LockInterface
 {
     const ITEM_SIZE = 15;
 

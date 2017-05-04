@@ -1,7 +1,7 @@
 <?php
-namespace Slock\Strategy;
+namespace Slock\Lock;
 
-interface StrategyInterface
+interface LockInterface
 {
     public function acquire(string $sessionId);
     public function release();

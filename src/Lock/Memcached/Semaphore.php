@@ -1,10 +1,10 @@
 <?php
-namespace Slock\Strategy\Memcached;
+namespace Slock\Lock\Memcached;
 
 use \Slock\SlockException;
-use \Slock\Strategy\StrategyInterface;
+use \Slock\Lock\LockInterface;
 
-final class Semaphore implements StrategyInterface
+final class Semaphore implements LockInterface
 {
     /**
      * @var \Memcached
