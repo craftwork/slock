@@ -1,5 +1,7 @@
 # Slock
 
+[![Build Status](https://travis-ci.org/mhotchen/slock.svg?branch=master)](https://travis-ci.org/mhotchen/slock)
+
 **NB:** This is a work in progress.
 
 Slock (short for session lock) is a decorator for the SessionInterface that implements session locking when the existing
