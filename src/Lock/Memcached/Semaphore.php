@@ -4,7 +4,7 @@ namespace Slock\Strategy\Memcached;
 use \Slock\SlockException;
 use \Slock\Strategy\StrategyInterface;
 
-class Semaphore implements StrategyInterface
+final class Semaphore implements StrategyInterface
 {
     /**
      * @var \Memcached

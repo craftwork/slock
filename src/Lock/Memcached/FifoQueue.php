@@ -9,7 +9,7 @@ use Slock\Strategy\StrategyInterface;
  *
  * @package Slock\Strategy\Memcached
  */
-class FifoQueue implements StrategyInterface
+final class FifoQueue implements StrategyInterface
 {
     const ITEM_SIZE = 15;
 
@@ -145,7 +145,7 @@ class FifoQueue implements StrategyInterface
 
     private static function getPosition($items, $item): int
     {
-        $itemCount = strlen($items) % static::ITEM_SIZE;
+        $itemCount = strlen($items) / static::ITEM_SIZE;
         for ($i = 0; $i < $itemCount; $i++) {
             if (static::getItem($items, $i) === $item) {
                 return $i;
