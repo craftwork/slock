@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace Slock;
 
 use Slock\Lock\LockInterface;
@@ -23,20 +23,26 @@ final class Slock implements \SessionHandlerInterface
 
     public function open($save_path, $name)
     {
+        // acquire lock before opening the session
+
         $this->lock->acquire(session_id());
         $this->handler->open($save_path, $name);
     }
 
     public function close()
     {
+        // close the session before unlocking it
+
         $this->handler->close();
         $this->lock->release();
     }
 
     public function destroy($session_id)
     {
-        $this->lock->destroy($session_id);
+        // destroy the session, then destroy the lock
+
         $this->handler->destroy($session_id);
+        $this->lock->destroy($session_id);
     }
 
     public function gc($maxlifetime)
