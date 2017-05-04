@@ -1,0 +1,35 @@
+{
+    "name": "mhn/slock",
+    "type": "library",
+    "keywords": [
+        "session",
+        "lock",
+        "memcache"
+    ],
+    "homepage": "https://github.com/mhotchen/slock",
+    "require": {
+        "php": "^7.0",
+        "ext-memcached": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.1",
+        "mockery/mockery": "^0.9.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Slock\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\": "tests",
+            "Test\\Behat\\": "tests/behat/bootstrap"
+        }
+    },
+    "authors": [
+        {
+            "name": "Matthew Hotchen",
+            "email": "github@mhn.me"
+        }
+    ]
+}
