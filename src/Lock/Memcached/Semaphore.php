@@ -35,6 +35,7 @@ final class Semaphore implements LockInterface
     {
         $this->semaphore = static::getName($sessionId);
         $acquired = false;
+        $cas = null;
 
         do {
             /*

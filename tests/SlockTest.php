@@ -1,17 +1,13 @@
 <?php declare(strict_types=1);
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Slock\Slock;
 use Slock\Lock\LockInterface;
 
 class SlockTest extends TestCase
 {
-    use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-
-    public function tearDown()
-    {
-        Mockery::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testCorrectLockAcquireLogic()
     {
