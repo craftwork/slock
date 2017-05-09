@@ -26,11 +26,17 @@ final class Semaphore implements LockInterface
      */
     private $cas;
 
+    /**
+     * @param \Memcached $memcache
+     */
     public function __construct(\Memcached $memcache)
     {
         $this->memcache = $memcache;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function acquire(string $sessionId)
     {
         $this->semaphore = static::getName($sessionId);
@@ -84,6 +90,9 @@ final class Semaphore implements LockInterface
         } while (!$acquired);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function release()
     {
         // Only release if it's still the value we stored.
@@ -91,17 +100,28 @@ final class Semaphore implements LockInterface
         $this->checkResults([\Memcached::RES_SUCCESS, \Memcached::RES_NOTFOUND, \Memcached::RES_DATA_EXISTS]);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function destroy(string $sessionId)
     {
         $this->memcache->delete(static::getName($sessionId));
         $this->checkResults([\Memcached::RES_SUCCESS, \Memcached::RES_NOTFOUND]);
     }
 
+    /**
+     * @param string $sessionId
+     * @return string
+     */
     private static function getName(string $sessionId): string
     {
         return "semaphore_$sessionId";
     }
 
+    /**
+     * @param array $validCodes
+     * @throws SlockException
+     */
     private function checkResults(array $validCodes)
     {
         if (!in_array($this->memcache->getResultCode(), $validCodes, true)) {

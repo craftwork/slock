@@ -43,6 +43,12 @@ final class FifoQueue implements LockInterface
      */
     private $removeFirstItemFromQueueAfterSeconds;
 
+    /**
+     * @param \Memcached $memcache
+     * @param int        $removeFirstItemFromQueueAfterSeconds If the queue is stuck for N seconds then drop the first
+     *                                                         item (eg. if there was a network failure and it never
+     *                                                         got removed).
+     */
     public function __construct(\Memcached $memcache, int $removeFirstItemFromQueueAfterSeconds = 0)
     {
         $this->memcache = $memcache;
@@ -50,6 +56,9 @@ final class FifoQueue implements LockInterface
         $this->item = random_bytes(static::ITEM_SIZE);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function acquire(string $sessionId)
     {
         $this->queue = static::queueName($sessionId);
@@ -62,7 +71,6 @@ final class FifoQueue implements LockInterface
              * or altered externally then we recreate it or append the
              * item to it again.
              */
-
             $this->createOrAppend();
 
             /*
@@ -70,7 +78,6 @@ final class FifoQueue implements LockInterface
              * from the queue then getPosition will return -1 and we'll append
              * it again.
              */
-
             $items = $this->memcache->get($this->queue) ?: "";
             $this->checkResults([\Memcached::RES_NOTFOUND, \Memcached::RES_SUCCESS]);
             while (static::getPosition($items, $this->item) > 0) {
@@ -104,6 +111,9 @@ final class FifoQueue implements LockInterface
         } while (!$acquired);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function release()
     {
         /*
@@ -127,23 +137,40 @@ final class FifoQueue implements LockInterface
         $this->checkResults([\Memcached::RES_SUCCESS]);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function destroy(string $sessionId)
     {
         $this->memcache->delete(static::queueName($sessionId));
         $this->checkResults([\Memcached::RES_NOTFOUND, \Memcached::RES_SUCCESS]);
     }
 
+    /**
+     * @param string $sessionId
+     * @return string
+     */
     private static function queueName(string $sessionId): string
     {
         return "fifo_queue_$sessionId";
     }
 
-    private static function getItem($items, $i): string
+    /**
+     * @param string $items
+     * @param int    $i
+     * @return string
+     */
+    private static function getItem(string $items, int $i): string
     {
         return substr($items, $i * static::ITEM_SIZE, static::ITEM_SIZE);
     }
 
-    private static function getPosition($items, $item): int
+    /**
+     * @param string $items
+     * @param string $item
+     * @return int
+     */
+    private static function getPosition(string $items, string $item): int
     {
         $itemCount = strlen($items) / static::ITEM_SIZE;
         for ($i = 0; $i < $itemCount; $i++) {
@@ -155,6 +182,11 @@ final class FifoQueue implements LockInterface
         return -1;
     }
 
+    /**
+     * Create the queue and/or append this request to it
+     *
+     * @throws SlockException
+     */
     private function createOrAppend()
     {
         $this->memcache->add($this->queue, $this->item);
@@ -165,6 +197,10 @@ final class FifoQueue implements LockInterface
         $this->checkResults([\Memcached::RES_SUCCESS]);
     }
 
+    /**
+     * @param array $validCodes
+     * @throws SlockException
+     */
     private function checkResults(array $validCodes)
     {
         if (!in_array($this->memcache->getResultCode(), $validCodes, true)) {
@@ -172,6 +208,9 @@ final class FifoQueue implements LockInterface
         }
     }
 
+    /**
+     * @throws SlockException
+     */
     private function checkToRemoveFirstItem()
     {
         if ($this->removeFirstItemFromQueueAfterSeconds <= 0) {
