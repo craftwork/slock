@@ -44,7 +44,6 @@ final class Semaphore implements LockInterface
              * is deleted or altered externally then we recreate it and
              * retrieve the value again.
              */
-
             $this->memcache->add($this->semaphore, 1);
             $this->value = $this->memcache->get($this->semaphore, null, $cas);
             $this->checkResults([\Memcached::RES_NOTFOUND, \Memcached::RES_SUCCESS]);
