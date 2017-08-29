@@ -1,6 +1,10 @@
 # Slock
 
-[![Build Status](https://travis-ci.org/mhotchen/slock.svg?branch=master)](https://travis-ci.org/mhotchen/slock)
+[![Build status](https://img.shields.io/travis/craftwork/slock.svg?style=flat-square)](https://travis-ci.org/craftwork/slock.svg?branch=master)
+[![Code coverage](https://img.shields.io/codecov/c/github/craftwork/slock.svg?style=flat-square)](https://codecov.io/gh/craftwork/slock)
+[![Code quality](https://img.shields.io/scrutinizer/g/craftwork/slock.svg?style=flat-square)](https://codecov.io/gh/craftwork/slock)
+[![Packagist](https://img.shields.io/packagist/v/craftwork/slock.svg?style=flat-square)](https://packagist.org/packages/craftwork/slock)
+[![Chat](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/craftwork/Lobby)
 
 **NB:** This is a work in progress.
 
