@@ -1,12 +1,25 @@
 {
-    "name": "mhn/slock",
+    "name": "craftwork/slock",
+    "homepage": "https://github.com/craftwork/slock",
     "type": "library",
+    "license": "Apache-2.0",
     "keywords": [
+        "distributed",
         "session",
         "lock",
         "memcache"
     ],
-    "homepage": "https://github.com/mhotchen/slock",
+    "authors": [
+        {
+            "name": "Matthew Hotchen",
+            "email": "github@mhn.me",
+            "homepage": "https://github.com/mhotchen"
+        },
+        {
+            "name": "Craftwork",
+            "homepage": "https://github.com/craftwork"
+        }
+    ],
     "require": {
         "php": "^7.0",
         "ext-memcached": "^3.0"
@@ -17,19 +30,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Slock\\": "src"
+            "Craftwork\\Slock\\": "src"
         }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Test\\": "tests",
-            "Test\\Behat\\": "tests/behat/bootstrap"
-        }
-    },
-    "authors": [
-        {
-            "name": "Matthew Hotchen",
-            "email": "github@mhn.me"
-        }
-    ]
+    }
 }

@@ -1,5 +1,7 @@
-<?php declare(strict_types=1);
-namespace Slock;
+<?php
+declare(strict_types=1);
+
+namespace Craftwork\Slock;
 
 class SlockException extends \Exception
 {

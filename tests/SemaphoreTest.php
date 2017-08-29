@@ -1,7 +1,8 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
+use Craftwork\Slock\Lock\Memcached\Semaphore;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Slock\Lock\Memcached\Semaphore;
 use PHPUnit\Framework\TestCase;
 
 class SemaphoreTest extends TestCase

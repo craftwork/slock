@@ -1,9 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
+use Craftwork\Slock\Slock;
+use Craftwork\Slock\Lock\LockInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
-use Slock\Slock;
-use Slock\Lock\LockInterface;
 
 class SlockTest extends TestCase
 {

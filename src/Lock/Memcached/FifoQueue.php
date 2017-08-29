@@ -1,8 +1,10 @@
-<?php declare(strict_types=1);
-namespace Slock\Lock\Memcached;
+<?php
+declare(strict_types=1);
 
-use Slock\SlockException;
-use Slock\Lock\LockInterface;
+namespace Craftwork\Slock\Lock\Memcached;
+
+use Craftwork\Slock\SlockException;
+use Craftwork\Slock\Lock\LockInterface;
 
 /**
  * Uses memcache as a store for creating a FIFO queue for the user's session.

@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
-namespace Slock;
+<?php
+declare(strict_types=1);
 
-use Slock\Lock\LockInterface;
+namespace Craftwork\Slock;
+
+use Craftwork\Slock\Lock\LockInterface;
 
 final class Slock implements \SessionHandlerInterface
 {
