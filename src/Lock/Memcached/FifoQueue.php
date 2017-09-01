@@ -13,7 +13,11 @@ use Craftwork\Slock\Lock\LockInterface;
  */
 final class FifoQueue implements LockInterface
 {
-    const ITEM_SIZE = 15;
+    /**
+     * 128 bits; the same size as a UUID so chances of collisions, especially given how small a queue will typically
+     * be, are astronomically small.
+     */
+    const ITEM_SIZE = 16;
 
     /**
      * @var \Memcached
@@ -47,9 +51,10 @@ final class FifoQueue implements LockInterface
 
     /**
      * @param \Memcached $memcache
-     * @param int        $removeFirstItemFromQueueAfterSeconds If the queue is stuck for N seconds then drop the first
-     *                                                         item (eg. if there was a network failure and it never
-     *                                                         got removed).
+     * @param int $removeFirstItemFromQueueAfterSeconds If the queue is stuck for N seconds then drop the first
+     *                                                  item (eg. if there was a network failure and it never
+     *                                                  got removed).
+     * @throws \Exception If there isn't enough entropy for random_bytes.
      */
     public function __construct(\Memcached $memcache, int $removeFirstItemFromQueueAfterSeconds = 0)
     {
@@ -124,6 +129,7 @@ final class FifoQueue implements LockInterface
          * meantime (eg. by another item being appended) then try again.
          */
 
+        $cas = null;
         do {
             $items = $this->memcache->get($this->queue, null, $cas) ?: "";
             $this->checkResults([\Memcached::RES_NOTFOUND, \Memcached::RES_SUCCESS]);
@@ -219,6 +225,7 @@ final class FifoQueue implements LockInterface
             return;
         }
 
+        $cas = null;
         $items = $this->memcache->get($this->queue, null, $cas);
         $first = static::getItem($items, 0);
         if ($first !== $this->first) {

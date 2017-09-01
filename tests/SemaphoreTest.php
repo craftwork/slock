@@ -11,6 +11,7 @@ class SemaphoreTest extends TestCase
 
     public function testSingleRequestSuccessfulLock()
     {
+        /** @var Memcached|Mockery\Mock $memcached */
         $memcached = Mockery::mock(\Memcached::class);
         $memcached->shouldIgnoreMissing();
         $memcached
@@ -23,8 +24,8 @@ class SemaphoreTest extends TestCase
         ;
         $memcached
             ->shouldReceive('cas')
-            ->with(null, "semaphore_test", 0) // it decrements the semaphore first
-            ->with(null, "semaphore_test", 1) // then returns it to the original value in "release", freeing it
+            ->with(null, "semaphore_SESSID", 0) // it decrements the semaphore first
+            ->with(null, "semaphore_SESSID", 1) // then returns it to the original value in "release", freeing it
         ;
 
         $semaphore = new Semaphore($memcached);
@@ -34,6 +35,7 @@ class SemaphoreTest extends TestCase
 
     public function testSemaphoreAlreadyInUse()
     {
+        /** @var Memcached|Mockery\Mock $memcached */
         $memcached = Mockery::mock(\Memcached::class);
         $memcached->shouldIgnoreMissing();
         $memcached
@@ -46,8 +48,8 @@ class SemaphoreTest extends TestCase
         ;
         $memcached
             ->shouldReceive('cas')
-            ->with(null, "semaphore_test", 0) // it decrements the semaphore first
-            ->with(null, "semaphore_test", 1) // then returns it to the original value in "release", freeing it
+            ->with(null, "semaphore_SESSID", 0) // it decrements the semaphore first
+            ->with(null, "semaphore_SESSID", 1) // then returns it to the original value in "release", freeing it
         ;
 
         $semaphore = new Semaphore($memcached);
@@ -57,6 +59,7 @@ class SemaphoreTest extends TestCase
 
     public function testSemaphoreMissingReadd()
     {
+        /** @var Memcached|Mockery\Mock $memcached */
         $memcached = Mockery::mock(\Memcached::class);
         $memcached->shouldIgnoreMissing();
         $memcached
@@ -79,6 +82,7 @@ class SemaphoreTest extends TestCase
 
     public function testLostCas()
     {
+        /** @var Memcached|Mockery\Mock $memcached */
         $memcached = Mockery::mock(\Memcached::class);
         $memcached->shouldIgnoreMissing();
         $memcached
@@ -99,8 +103,8 @@ class SemaphoreTest extends TestCase
         ;
         $memcached
             ->shouldReceive('cas')
-            ->with(null, "semaphore_test", 0) // it decrements the semaphore first
-            ->with(null, "semaphore_test", 1) // then returns it to the original value in "release", freeing it
+            ->with(null, "semaphore_SESSID", 0) // it decrements the semaphore first
+            ->with(null, "semaphore_SESSID", 1) // then returns it to the original value in "release", freeing it
         ;
 
         $semaphore = new Semaphore($memcached);
@@ -110,6 +114,7 @@ class SemaphoreTest extends TestCase
 
     public function testSemaphoreAlteredExternally()
     {
+        /** @var Memcached|Mockery\Mock $memcached */
         $memcached = Mockery::mock(\Memcached::class);
         $memcached->shouldIgnoreMissing();
         $memcached
@@ -122,13 +127,48 @@ class SemaphoreTest extends TestCase
         ;
         $memcached
             ->shouldReceive('cas')
-            ->with(null, "semaphore_test", 0) // it decrements the semaphore
-            ->with(null, "semaphore_test", 0) // it decrements the semaphore again (after it was modified and recreated)
-            ->with(null, "semaphore_test", 1) // then returns it to the original value in "release", freeing it
+            ->with(null, "semaphore_SESSID", 0) // it decrements the semaphore
+            ->with(null, "semaphore_SESSID", 0) // it decrements the semaphore again (after it was modified and recreated)
+            ->with(null, "semaphore_SESSID", 1) // then returns it to the original value in "release", freeing it
         ;
 
         $semaphore = new Semaphore($memcached);
         $semaphore->acquire("test");
         $semaphore->release();
+    }
+
+    public function testDestroyError()
+    {
+        /** @var Memcached|Mockery\Mock $memcached */
+        $memcached = Mockery::mock(\Memcached::class);
+        $memcached->shouldIgnoreMissing();
+        $memcached
+            ->shouldReceive('delete')
+            ->with('fifo_queue_SESSID');
+
+        $memcached
+            ->shouldReceive('getResultCode')
+            ->andReturn(\Memcached::RES_CONNECTION_SOCKET_CREATE_FAILURE);
+
+        $this->expectException(\Craftwork\Slock\SlockException::class);
+
+        $semaphore = new Semaphore($memcached);
+        $semaphore->destroy('SESSID');
+    }
+
+    public function testDestroySuccess()
+    {
+        /** @var Memcached|Mockery\Mock $memcached */
+        $memcached = Mockery::mock(\Memcached::class);
+        $memcached
+            ->shouldReceive('delete')
+            ->with('semaphore_SESSID');
+
+        $memcached
+            ->shouldReceive('getResultCode')
+            ->andReturn(\Memcached::RES_SUCCESS);
+
+        $semaphore = new Semaphore($memcached);
+        $semaphore->destroy('SESSID');
     }
 }
