@@ -80,6 +80,11 @@ the overall page loading time ballooned to several seconds.
 
 ## Strategies
 
+### File lock
+
+This is the simplest method and ideal if you have an NFS mount with a file system that fully supports locks. Please read
+[this article](http://0pointer.de/blog/projects/locking.html) before deciding that file locks are the lock for you.
+
 ### FIFO queue
 
 If a user makes, for example, three requests requiring the session then they'll be put in a stack one on top of the
@@ -151,3 +156,44 @@ earliest.
 
 Whilst in most normal web situations there should be fairly little chatter between browser and server, you should pick
 the best solution for your scenario.
+
+## Usage
+
+To use simply create the session handler that you prefer, create the lock strategy you prefer, then create the `Slock`
+decorator passing the session handler and lock as arguments, then pass the Slock instance to PHP's
+`session_set_save_handler` function before starting the session.
+
+### Example for Symfony
+
+```php
+use Craftwork\Slock\Lock\Memcached\Semaphore;
+use Craftwork\Slock\Slock;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MemcachedSessionHandler;
+
+// Assume $memcached is a working Memcached instance
+$frameworkSessionHandler = new MemcachedSessionHandler($memcached);
+$lockStrategy = new Semaphore($memcached);
+
+$sessionHandler = new Slock($frameworkSessionHandler, $lockStrategy);
+
+// For Symfony you need to create a Session class as part of the bootstrapping.
+// Consult the framework's documentation for how to configure the session handler.
+// http://symfony.com/doc/current/components/http_foundation/session_configuration.html
+$session = new Session($sessionHandler);
+```
+
+### Example for manually setting the session handler
+
+```php
+use Craftwork\Slock\Lock\FileLock;
+use Craftwork\Slock\Slock;
+
+// Assume CustomSessionHandler is a custom written class that implements the native SessionHandlerInterface interface
+$customSessionHandler = new CustomSessionHandler;
+$lockStrategy = new FileLock('/path/to/session/lock/dir');
+
+$sessionHandler = new Slock($customSessionHandler, $lockStrategy);
+
+session_set_save_handler($sessionHandler);
+```

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use Craftwork\Slock\Lock\Memcached\FifoQueue;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
