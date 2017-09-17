@@ -5,7 +5,7 @@ namespace Craftwork\Slock\Lock;
 
 use Craftwork\Slock\SlockException;
 
-class FileLock implements LockInterface
+final class FileLock implements LockInterface
 {
     /**
      * @var resource
